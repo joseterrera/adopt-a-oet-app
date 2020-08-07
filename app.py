@@ -1,6 +1,6 @@
 """Flask app for adopt a pet"""
 from flask import Flask, url_for, render_template, redirect, flash, jsonify
-from flask_debugtoolbar, import DebugToolbarExtension
+from flask_debugtoolbar import DebugToolbarExtension
 
 from models import db, connect_db, Pet
 from forms import AddPetForm, EditPetForm
@@ -40,7 +40,7 @@ def add_pet():
     # We will create new key/value pairs with the submitted new form data and
     # add it to the new dictionary
     # We will also exclude all hidden values
-    data = {k, v for k, v in form.data.items() if k != 'csrf token'}
+    data = {k: v for k, v in form.data.items() if k != 'csrf token'}
     # (**data) unpack the dictionary values so they are sent as separate keyword arguments. One asterisk for a list, two asterisks for a dictionary.
     new_pet = Pet(**data)
     db.session.add(new_pet)
@@ -49,7 +49,7 @@ def add_pet():
     return redirect(url_for('list_pets'))
 
   else: 
-    return render_template('pet_add_form.html' form=form)
+    return render_template('pet_add_form.html', form=form)
 
   @app.route('/<int:pet_id>', methods=["GET", ["POST"]])
   def edit_pet(pet_id):
@@ -60,6 +60,23 @@ def add_pet():
     if form.validate_on_submit():
       pet.notes = form.notes.data
       pet.available = form.available.data
+      pet.photo.url = form.photo_url.data
+      db.session.commit()
+      flash(f"{pet.name} updated.")
+      return redirect(url_for('list_pets'))
+
+    else:
+      # failed, re-present form for editing
+      return render_template('pet_edit_form.html', form=form, pet=pet)
+
+@app.route('/api/pets/<int:pet_id>', methods=["GET"])
+def api_get_pet(pet_id):
+  """Return basic info about pet in JSON"""
+
+  pet = Pet.query.get_or_404(pet_id)
+  info = {"name": pet.name, "age": pet.age}
+
+  return jsonify(info)
 
 
 

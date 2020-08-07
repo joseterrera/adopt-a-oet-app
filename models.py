@@ -1,9 +1,10 @@
 """Models for adopt a pet"""
-flom flask_sqlalchemy import SQLAlchemy
+
+from flask_sqlalchemy import SQLAlchemy
 
 DEFAULT_IMAGE = 'https://picsum.photos/id/237/200/300';
 
-db = SQLAlchemy;
+db = SQLAlchemy()
 
 
 class Pet(db.Model):
@@ -22,9 +23,12 @@ class Pet(db.Model):
     """Return image for pet"""
     return self.photo_url or DEFAULT_IMAGE
 
-  def connect_db(app):
+
+def connect_db(app):
     """Connect this database to provided Flask app. 
        You should call this in your Flask app."""
 
     db.app = app
     db.init_app(app)
+
+    
