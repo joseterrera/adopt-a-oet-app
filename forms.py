@@ -16,7 +16,7 @@ class AddPetForm(FlaskForm):
     choices=[('cat', 'Cat'), ('dog', 'Dog'), ('pig', 'pig') ] )
   
   photo_url = StringField(
-    'Photo URL', validates=[Optional(), URL()] )
+    'Photo URL', validators=[Optional(), URL()] )
   
   age = IntegerField(
     'Age', validators=[Optional(), NumberRange(min=0, max=30)] )
