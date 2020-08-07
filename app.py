@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_TRACK_NOTIFICATIONS'] = False
 connect_db(app)
 db.create_all()
 
-# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 toolbar = DebugToolbarExtension(app)
 
@@ -27,25 +27,6 @@ def list_pets():
   pets = Pet.query.all()
   return render_template('pet_list.html', pets=pets)
 
-
-# @app.route("/add", methods=["GET", "POST"])
-# def add_pet():
-#   """Add a pet."""
-
-#   form = AddPetForm()
-
-#   if form.validate_on_submit():
-#       data = {k: v for k, v in form.data.items() if k != "csrf_token"}
-#       new_pet = Pet(**data)
-#       # new_pet = Pet(name=form.name.data, age=form.age.data, ...)
-#       db.session.add(new_pet)
-#       db.session.commit()
-#       flash(f"{new_pet.name} added.")
-#       return redirect(url_for('list_pets'))
-
-#   else:
-#       # re-present form for editing
-#       return render_template("pet_add_form.html", form=form)
 
 @app.route('/add', methods=["GET", "POST"])
 def add_pet():
@@ -59,12 +40,12 @@ def add_pet():
     # We will create new key/value pairs with the submitted new form data and
     # add it to the new dictionary
     # We will also exclude all hidden values
-    data = {k: v for k, v in form.data.items() if k != 'csrf token'}
+    data = {k: v for k, v in form.data.items() if k != 'csrf_token'}
     # (**data) unpack the dictionary values so they are sent as separate keyword arguments. One asterisk for a list, two asterisks for a dictionary.
     new_pet = Pet(**data)
     db.session.add(new_pet)
     db.session.commit()
-    flash(f"{new_pet_name} added.")
+    flash(f"{new_pet.name} added.")
     return redirect(url_for('list_pets'))
 
   else: 
@@ -79,7 +60,8 @@ def edit_pet(pet_id):
   if form.validate_on_submit():
     pet.notes = form.notes.data
     pet.available = form.available.data
-    pet.photo.url = form.photo_url.data
+    pet.photo_url = form.photo_url.data
+    pet.name = form.name.data
     db.session.commit()
     flash(f"{pet.name} updated.")
     return redirect(url_for('list_pets'))
